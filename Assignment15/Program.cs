@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.Linq;
 using System.Threading.Channels;
 using static Assignment15.ListGenerators;
 
@@ -11,6 +12,7 @@ namespace Assignment15
         static void Main(string[] args)
         {
             #region LINQ - Element Operators
+            Console.WriteLine("LINQ - Element Operators");
             //1
             Console.WriteLine(ProductList.First());
             Console.WriteLine("===============================");
@@ -27,6 +29,7 @@ namespace Assignment15
             #endregion
 
             #region LINQ - Aggregate Operators
+            Console.WriteLine("LINQ - Aggregate Operators");
             //1
             var oddNumsCount = Arr.Count(num => num % 2 == 0);
             Console.WriteLine(oddNumsCount);
@@ -148,23 +151,42 @@ namespace Assignment15
             #endregion
 
             #region LINQ - Set Operators
+            Console.WriteLine("LINQ - Set Operators");
             //1
             var uniqueCategory = ProductList.Distinct();
             PrintEnumerable(uniqueCategory);
+
+            //2
+            var set1 = CustomerList.Select(c => c.CustomerName[0]).Union(ProductList.Select(p => p.ProductName[0]));
+            PrintEnumerable(set1);
+
+            //3
+            var set2 = CustomerList.Select(c => c.CustomerName[0]).Intersect(ProductList.Select(p => p.ProductName[0]));
+            PrintEnumerable(set2);
+
+            //4
+            var set3 = ProductList.Select(p => p.ProductName[0]).Except(CustomerList.Select(c => c.CustomerName[0]));
+            PrintEnumerable(set3);
+
+            //5
+            var set4 = ProductList.Select(p => p.ProductName.Substring(p.ProductName.Length - 3)).Concat(CustomerList.Select(c => c.CustomerName.Substring(c.CustomerName.Length - 3)));
+            PrintEnumerable(set4);
+
             #endregion
 
             #region LINQ - Partitioning Operators
+            Console.WriteLine("LINQ - Partitioning Operators");
             //1
-            var first3Orders = CustomerList.Where(p => p.City == "Washington").Take(3);
+            var first3Orders = CustomerList.Where(p => p.Region != null ? p.Region.Equals("WA") : false).Take(3);
             PrintEnumerable(first3Orders);
 
             //2
-            var skip2Orders = CustomerList.Where(p => p.City == "Washington").Skip(2);
+            var skip2Orders = CustomerList.Where(p => p.Region != null ? p.Region.Equals("WA") : false).Skip(2);
             PrintEnumerable(skip2Orders);
 
             //3
             int[] numbers = { 5, 4, 1, 3, 9, 8, 6, 7, 2, 0 };
-            var takeUntil = numbers.TakeWhile((n, i) => n < i);
+            var takeUntil = numbers.TakeWhile((n, i) => n > i);
             PrintEnumerable(takeUntil);
 
             //4
@@ -177,20 +199,30 @@ namespace Assignment15
             #endregion
 
             #region LINQ - Quantifiers
+            Console.WriteLine("LINQ - Quantifiers");
             //1
             var quant1 = text.Any(s => s.Contains("ei"));
             Console.WriteLine(quant1);
 
             //2
             var quant2 = ProductList.GroupBy(p => p.Category).Where(c => c.Any(p => p.UnitsInStock == 0));
-            PrintEnumerable(quant2);
+            foreach ( var group in quant2)
+            {
+                foreach (var item in group) { Console.WriteLine(item); }
+                Console.WriteLine(".....");
+            }
 
             //2
             var quant3 = ProductList.GroupBy(p => p.Category).Where(c => c.All(p => p.UnitsInStock > 0));
-            PrintEnumerable(quant3);
+            foreach (var group in quant3)
+            {
+                foreach (var item in group) { Console.WriteLine(item); }
+                Console.WriteLine(".....");
+            }
             #endregion
 
             #region LINQ – Grouping Operators
+            Console.WriteLine("LINQ – Grouping Operators");
             //1
             List<int> numbers2 = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
             var group1 = numbers2.GroupBy(n => n % 5);
@@ -208,12 +240,12 @@ namespace Assignment15
 
             //2
             var group2 = text.GroupBy(s => s[0]);
-            foreach (var group in group2)
-            {
-                foreach (var item in group) Console.WriteLine(item);
-                Console.WriteLine(".........");
-            }
-            Console.WriteLine("=====================================");
+            //foreach (var group in group2)
+            //{
+            //    foreach (var item in group) Console.WriteLine(item);
+            //    Console.WriteLine(".........");
+            //}
+            //Console.WriteLine("=====================================");
 
             //3
             String[] Arr3 = { "from", "salt", "earn", "last", "near", "form" };
